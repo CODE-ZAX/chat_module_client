@@ -12,7 +12,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import { Link as Lnk } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
+import { async } from "@firebase/util";
 function Copyright(props) {
   return (
     <Typography
@@ -40,7 +42,10 @@ export default function SignUp() {
   const [firstNameErr, setFirstNameErr] = useState("");
   const [lastNameErr, setLastNameErr] = useState("");
   const [checkBoxErr, setCheckBoxErr] = useState("");
-  const handleSubmit = (event) => {
+
+  const { userSignup, registerUser } = useUser();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const firstName = data.get("firstName");
@@ -131,7 +136,7 @@ export default function SignUp() {
       errorCB = true;
       setCheckBoxErr("Must be checked!");
     }
-    if (!errorF && !errorP && !errorL && !errorCP && !errorCB) {
+    if (!errorF && !errorP && !errorE && !errorL && !errorCP && !errorCB) {
       console.log({
         fullname: firstName + " " + lastName,
         email: data.get("email"),
@@ -139,6 +144,12 @@ export default function SignUp() {
         confirmPassword: cpassword,
         checkbox: checkboxValue,
       });
+
+      const userCreds = await userSignup(
+        data.get("email"),
+        data.get("password")
+      );
+      await registerUser(userCreds.user.uid, email, firstName, lastName);
     }
   };
   return (
@@ -229,19 +240,19 @@ export default function SignUp() {
                   helperText={cpasswordErr}
                 />
               </Grid>
-              {checkBoxErr.length !== 0 ? (
-                <span style={{ color: "red", fontSize: 12 }}>
-                  {checkBoxErr}
-                </span>
-              ) : (
-                <></>
-              )}
               <Grid item xs={12}>
                 <FormControlLabel
                   control={<Checkbox name="checkbox" color="primary" />}
                   label="I agree to Terms and Conditions"
                 />
               </Grid>
+              {checkBoxErr.length !== 0 ? (
+                <div style={{ marginLeft: "16px", color: "red", fontSize: 12 }}>
+                  {checkBoxErr}
+                </div>
+              ) : (
+                <></>
+              )}
             </Grid>
             <Button
               type="submit"
@@ -251,11 +262,13 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
-            <Grid container justifyContent="flex-end">
+            <Grid container justifyContent="center">
               <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
-                </Link>
+                <Lnk to={"/login"}>
+                  <Link href="#" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Lnk>
               </Grid>
             </Grid>
           </Box>

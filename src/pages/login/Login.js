@@ -12,6 +12,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link as Lnk } from "react-router-dom";
+import { useUser } from "../../context/UserContext";
 
 function Copyright(props) {
   return (
@@ -22,8 +24,8 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
+      <Link color="inherit" href="https://sirzaxx.info">
+        Sir Zaxx
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -36,7 +38,8 @@ const theme = createTheme();
 export default function Login() {
   const [emailErr, setEmailErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
-  const handleSubmit = (event) => {
+  const { userLogin } = useUser();
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
@@ -65,10 +68,7 @@ export default function Login() {
       setPasswordErr("");
     }
     if (!errorE && !errorP) {
-      console.log({
-        email: data.get("email"),
-        password: data.get("password"),
-      });
+      await userLogin(email, password);
     }
   };
 
@@ -134,14 +134,16 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
+                <Lnk to="/forget-password">
+                  <Link variant="body2">Forgot password?</Link>
+                </Lnk>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                <Lnk to="/signup">
+                  <Link variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Lnk>
               </Grid>
             </Grid>
           </Box>

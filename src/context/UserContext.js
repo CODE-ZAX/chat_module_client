@@ -30,9 +30,9 @@ export const DataProvidor = ({ children }) => {
   }, []);
 
   const userLogin = async (email, password) =>
-    signInWithEmailAndPassword(email, password);
+    signInWithEmailAndPassword(auth, email, password);
   const userSignup = async (email, password) =>
-    createUserWithEmailAndPassword(email, password);
+    createUserWithEmailAndPassword(auth, email, password);
   const registerUser = async (uid, email, firstName, lastName) => {
     try {
       const colRef = collection(db, "users");
@@ -42,16 +42,19 @@ export const DataProvidor = ({ children }) => {
         email: email,
         uid: uid,
       });
-      console.log("Account Registered: ", docRef.id);
+      console.log("Account Registered: ");
     } catch (e) {
       console.error("Error adding document: ", e);
     }
   };
-
   return (
     <UserContext.Provider
       value={{
         user,
+        userLogin,
+        userSignup,
+        registerUser,
+
         signout,
       }}
     >
